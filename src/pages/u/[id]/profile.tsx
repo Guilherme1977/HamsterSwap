@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import type { NextPage } from "next";
 import MainLayout from "@/src/layouts/main";
 import { ProfilePageProvider } from "@/src/hooks/pages/profile";
@@ -19,6 +19,7 @@ import {
   SwapItemEntity,
   SwapOptionEntity,
   SwapProposalEntity,
+  SwapProposalStatus,
 } from "@/src/entities/proposal.entity";
 
 const Layout: FC = () => {
@@ -35,6 +36,11 @@ const Layout: FC = () => {
       getExploreProposals({
         walletAddress: profile.walletAddress,
         options: {
+          statuses: [
+            SwapProposalStatus.DEPOSITED,
+            SwapProposalStatus.FULFILLED,
+            SwapProposalStatus.CANCELED,
+          ],
           search: _search,
         },
       })
@@ -45,15 +51,23 @@ const Layout: FC = () => {
     handleSearch();
   }, [profile]);
 
+  useEffect(() => {
+    console.log(router.query.id);
+  }, [router.query]);
+
   return (
     <MainLayout>
       <Breadcrumb title="Profile" />
       <LayoutSection className="relative top-[-180px]">
         <div className="mb-[20px]">
           <div className="block mt-[20px]">
-            {router.query.id && (
-              <UserInfoCard userId={router.query.id as string} />
-            )}
+            {useMemo(() => {
+              return (
+                router.query.id && (
+                  <UserInfoCard userId={router.query.id as string} />
+                )
+              );
+            }, [router.query])}
           </div>
         </div>
         <SubMenu curTab={0} />
@@ -86,7 +100,7 @@ const Layout: FC = () => {
               </div>
             </div>
           </div>
-          {proposals.map((proposal: SwapProposalEntity) => {
+          {proposals?.map((proposal: SwapProposalEntity) => {
             const p: any = { ...proposal };
             const newOfferItems = p.offerItems.map(
               (offerItem: SwapItemEntity) => parseProposal(offerItem)
@@ -98,7 +112,15 @@ const Layout: FC = () => {
             );
             p.offerItems = newOfferItems;
             p.swapOptions = newSwapOptions;
-            return <ProposalDetail key={p.id} data={p} status={p.status} />;
+            return (
+              <ProposalDetail
+                key={p.id}
+                data={p}
+                status={p.status}
+                proposalId={proposal.id}
+                proposalOwner={proposal.ownerAddress || proposal.owner}
+              />
+            );
           })}
         </div>
       </LayoutSection>
