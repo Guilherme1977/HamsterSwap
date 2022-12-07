@@ -14,7 +14,7 @@ export const ProposalExploreItem: FC<
   ProposalItemProps & { proposal: SwapProposalEntity }
 > = (props) => {
   const router = useRouter();
-  console.log(props.proposal.expiredAt);
+
   return (
     <StyledProposalItem
       className="w-full bg-dark10 min-h-[200px] rounded-[32px] rounded-[32px] mb-[46px]"
@@ -93,7 +93,7 @@ export const ProposalExploreItem: FC<
                 "!rounded-[100px] after:!rounded-[100px] !px-[10px] relative"
               )}
               text="View Detail"
-              onClick={() => router.push("/proposal/2")}
+              onClick={() => router.push(`/proposal/${props.proposal.id}`)}
             />
           </div>
         </div>
