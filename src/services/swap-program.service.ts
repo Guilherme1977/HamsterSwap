@@ -12,6 +12,7 @@ import { uuid } from "uuidv4";
 export class SwapProgramService {
   /**
    * @dev Program provider injected.
+   * @private
    */
   private readonly swapProgramProvider: SwapProgramProvider;
   private readonly utilsProvider: UtilsProvider;
@@ -90,7 +91,7 @@ export class SwapProgramService {
      * @dev Now create proposal to on-chain, wrap in sync function to sync data after done processing on-chain.
      */
     return await this.requestAndSyncProposal(proposalId, async () => {
-      return this.swapProgramProvider.wrapProposal(
+      return this.swapProgramProvider.swapProposal(
         walletProvider,
         await this.getProposal(proposalId),
         optionId
